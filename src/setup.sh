@@ -34,10 +34,10 @@ check
 #mv launcher_config.yaml /home/pi/clover2-dev/src/clover2/tooling/assets/klever5
 #check
 
-echo "[5] Building"
-cd ~/clover2-dev
-colcon build --symlink-install
-check
+#echo "[5] Building"
+#cd ~/clover2-dev
+#colcon build --symlink-install
+#check
 
 
 cd /home/pi/NTO_2027

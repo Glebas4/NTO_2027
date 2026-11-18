@@ -17,15 +17,15 @@ check() {
 echo "Setup started"
 cd /home/pi/NTO_2027/files
 
-echo "[1] mv aruco_map.png model.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/aruco_plane"
+echo "[1] cp aruco_map.png model.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/aruco_plane"
 cp aruco_map.png model.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/aruco_plane
 check
 
-echo "[2] mv clover2_aruco.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/worlds"
+echo "[2] cp clover2_aruco.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/worlds"
 cp clover2_aruco.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/worlds
 check
 
-echo "[3] mv simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clover2_map/map"
+echo "[3] cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clover2_map/map"
 cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clover2_map/map
 check
 
@@ -34,10 +34,20 @@ check
 #mv launcher_config.yaml /home/pi/clover2-dev/src/clover2/tooling/assets/klever5
 #check
 
-#echo "[5] Building"
-#cd ~/clover2-dev
-#colcon build --symlink-install
-#check
+echo "[4] Building"
+cd ~/clover2-dev
+colcon build --symlink-install
+check
+
+cd /home/pi/NTO_2027/files
+echo 'cp gz_simple.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
+cp gz_simple.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch
+check
+
+cd /home/pi/NTO_2027/files
+echo 'cp spawn.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
+cp spawn.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch
+check
 
 
 #cd /home/pi/NTO_2027

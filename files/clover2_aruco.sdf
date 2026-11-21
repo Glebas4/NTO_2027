@@ -103,7 +103,7 @@
     <include>
       <uri>model://aruco_plane</uri>
       <name>aruco_plane</name>
-      <pose>4.75 -4.75 -0.02 0 0 0</pose>
+      <pose>4.5 4.5 -0.02 0 0 1.57079632</pose>
     </include>
  <!--   <include>
       <uri>model://football_map</uri>

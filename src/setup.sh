@@ -30,31 +30,22 @@ cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clover2_map/ma
 check
 
 echo "[4] cp lep_model /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models"
-cp lep_model /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models
+cp -r lep_model /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models
 check
 
-#cd /home/pi/NTO_2027/files
-#echo "[4] mv launcher_config.yaml /home/pi/clover2-dev/src/clover2/tooling/assets/klever5"
-#mv launcher_config.yaml /home/pi/clover2-dev/src/clover2/tooling/assets/klever5
-#check
-
-echo "[4] Building"
+echo "[5] Building"
 cd ~/clover2-dev
 colcon build --symlink-install
 check
 
 cd /home/pi/NTO_2027/files
-echo 'cp gz_simple.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
+echo '[6] cp gz_simple.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
 cp gz_simple.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch
 check
 
 cd /home/pi/NTO_2027/files
-echo 'cp spawn.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
+echo '[7] cp spawn.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
 cp spawn.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch
 check
-
-
-#cd /home/pi/NTO_2027
-#rm -rf files
 
 echo "Setup done"

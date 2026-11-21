@@ -1,7 +1,7 @@
 name: custom_map
 frame_id: map
 dict: 4X4_250
-default_size: 0.3441
+default_size: 0.35
 markers:
 - id: 0
   pose:

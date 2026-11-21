@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="lep_pole">
+    <static>true</static>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+            <mesh>
+                <uri>model://lep_model/lep.glb</uri>
+                <scale>1 1 1</scale>
+            </mesh>
+        </geometry>
+        <material>
+          <ambient>0.5 0.5 0.5 1</ambient>
+          <diffuse>0.5 0.5 0.5 1</diffuse>
+        </material>
+      </visual>
+
+      <!-- Упрощённая физическая коллизия (столб) -->
+      <collision name="collision">
+        <pose>0 0 0.75 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.08</radius>
+            <length>1.5</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

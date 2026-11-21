@@ -29,6 +29,10 @@ echo "[3] cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clov
 cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clover2_map/map
 check
 
+echo "[4] cp lep_model /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models"
+cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clover2_map/map
+check
+
 #cd /home/pi/NTO_2027/files
 #echo "[4] mv launcher_config.yaml /home/pi/clover2-dev/src/clover2/tooling/assets/klever5"
 #mv launcher_config.yaml /home/pi/clover2-dev/src/clover2/tooling/assets/klever5

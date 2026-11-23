@@ -154,6 +154,47 @@ def is_ros_node_running(node_name: str) -> bool:
 
 
 
+def gen_leps(client, node) -> None:
+    cords = gen_lep_cords()
+    rots = gen_rots(cords)
+    data = []
+
+    for i in range(3):
+        data.append((cords[i][0], cords[i][1], rots[i]))
+
+
+    for i, dat in enumerate(data, 1):
+        req = SpawnEntity.Request()
+        req.entity_factory.name = f'lep_{i}'
+        req.entity_factory.sdf_filename = '/home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/lep_model/model.sdf'
+        req.entity_factory.pose.position.x = dat[0]
+        req.entity_factory.pose.position.y = dat[1]
+        req.entity_factory.pose.position.z = 0.0
+
+        req.entity_factory.pose.orientation.x = 0.0
+        req.entity_factory.pose.orientation.y = 0.0
+        req.entity_factory.pose.orientation.z = math.sin(dat[2] / 2.0)
+        req.entity_factory.pose.orientation.w = math.cos(dat[2] / 2.0)
+
+                    # 3. Отправляем запрос и ждём результат
+        future = client.call_async(req)
+        rclpy.spin_until_future_complete(node, future)
+        print(f'Результат спавна ЛЭП {i}:', future.result().success)
+
+
+
+def remove_leps(client, node):
+    for i in range(1, 4):
+        req = DeleteEntity.Request()
+        req.entity.name = f'lep_{i}'
+        req.entity.type = 2  # 2 = MODEL (тип сущности в Gazebo)
+
+        future = client.call_async(req)
+        rclpy.spin_until_future_complete(node, future)
+        print(f'Результат удаления ЛЭП {i}:', future.result().success)
+
+
+
 def main():
     rclpy.init()
     node = rclpy.create_node('simple_spawner')
@@ -174,34 +215,7 @@ def main():
             )
 
         client.wait_for_service()
-
-
-        cords = gen_lep_cords()
-        rots = gen_rots(cords)
-
-        data = []
-
-        for i in range(3):
-            data.append((cords[i][0], cords[i][1], rots[i]))
-
-
-        for i, dat in enumerate(data, 1):
-            req = SpawnEntity.Request()
-            req.entity_factory.name = f'lep_{i}'
-            req.entity_factory.sdf_filename = '/home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/lep_model/model.sdf'
-            req.entity_factory.pose.position.x = dat[0]
-            req.entity_factory.pose.position.y = dat[1]
-            req.entity_factory.pose.position.z = 0.0
-
-            req.entity_factory.pose.orientation.x = 0.0
-            req.entity_factory.pose.orientation.y = 0.0
-            req.entity_factory.pose.orientation.z = math.sin(dat[2] / 2.0)
-            req.entity_factory.pose.orientation.w = math.cos(dat[2] / 2.0)
-
-                    # 3. Отправляем запрос и ждём результат
-            future = client.call_async(req)
-            rclpy.spin_until_future_complete(node, future)
-            print(f'Результат спавна ЛЭП {i}:', future.result().success)
+        gen_leps(client, node)
 
 
 
@@ -220,16 +234,8 @@ def main():
             )
 
         client.wait_for_service()
+        remove_leps(client, node)
 
-
-        for i in range(1, 4):
-            req = DeleteEntity.Request()
-            req.entity.name = f'lep_{i}'
-            req.entity.type = 2  # 2 = MODEL (тип сущности в Gazebo)
-
-            future = client.call_async(req)
-            rclpy.spin_until_future_complete(node, future)
-            print(f'Результат удаления ЛЭП {i}:', future.result().success)
 
 
     if bridge is not None:

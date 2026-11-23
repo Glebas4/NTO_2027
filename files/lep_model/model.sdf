@@ -4,16 +4,14 @@
     <static>true</static>
     <link name="link">
       <visual name="visual">
+        <pose>0 0 0 3.1415 0 0</pose>
         <geometry>
-            <mesh>
-                <uri>model://lep_model/lep.glb</uri>
-                <scale>1 1 1</scale>
-            </mesh>
+          <mesh>
+            <uri>model://lep_model/lep_color.glb</uri>
+            <scale>1 1 1</scale>
+          </mesh>
         </geometry>
-        <material>
-          <ambient>0.5 0.5 0.5 1</ambient>
-          <diffuse>0.5 0.5 0.5 1</diffuse>
-        </material>
+        <!-- Тег <material> удалён, чтобы работали цвета из lep_norm.glb -->
       </visual>
 
       <!-- Упрощённая физическая коллизия (столб) -->
@@ -29,3 +27,6 @@
     </link>
   </model>
 </sdf>
+
+
+

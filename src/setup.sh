@@ -15,7 +15,7 @@ check() {
 }
 
 echo "Setup started"
-cd /home/pi/NTO_2027/files
+cd /home/pi/NTO_2027/files/others
 
 echo "[1] cp aruco_map.png model.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/aruco_plane"
 cp aruco_map.png model.sdf /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/aruco_plane
@@ -29,21 +29,24 @@ echo "[3] cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clov
 cp simulation.yaml /home/pi/clover2-dev/install/clover2_map/share/clover2_map/map
 check
 
-echo "[4] cp lep_model /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models"
-cp -r lep_model /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models
+
+
+cd /home/pi/NTO_2027/files
+echo "[4] cp -r lep_model isol_black isol_brown isol_red /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models"
+cp -r lep_model isol_black isol_brown isol_red /home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models
 check
+
 
 echo "[5] Building"
 cd ~/clover2-dev
 colcon build --symlink-install
 check
 
-cd /home/pi/NTO_2027/files
+cd /home/pi/NTO_2027/files/others
 echo '[6] cp gz_simple.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
 cp gz_simple.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch
 check
 
-cd /home/pi/NTO_2027/files
 echo '[7] cp spawn.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch'
 cp spawn.launch.py /home/pi/clover2-dev/install/clover2_sim/share/clover2_sim/launch
 check

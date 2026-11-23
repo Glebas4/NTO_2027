@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="isol_brown">
+    <static>true</static>
+    <link name="link">
+      <visual name="visual">
+        <pose>0 0 0 3.1415 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://isol_brown/isol.glb</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+        <!-- Тег <material> удалён, чтобы работали цвета из lep_norm.glb -->
+      </visual>
+    </link>
+  </model>
+</sdf>

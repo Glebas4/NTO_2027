@@ -1,3 +1,4 @@
+  GNU nano 7.2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     genmap.py                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 import sys
 import math
 import rclpy
@@ -8,14 +9,13 @@ import os
 import signal
 
 x_min = 0
-x_max = 8
+x_max = 9
 
 y_min = 1
-y_max = 8
+y_max = 9
 
 map_x_cent = 4.5
 map_y_cent = 4.5
-
 
 
 def get_dist(cords) -> float:    # cords = [[x1, y1], [x2, y2]]
@@ -30,6 +30,7 @@ def get_dist(cords) -> float:    # cords = [[x1, y1], [x2, y2]]
 
 
 def gen_lep_cords() -> list:
+    global x_min, x_max, y_min, y_max
     cords = []
 
     x1 = round(random.uniform(x_min, x_max), 2)
@@ -37,28 +38,109 @@ def gen_lep_cords() -> list:
 
     cords.append((x1, y1))
 
-    while len(cords) < 2:
-        r = random.randint(5, 10)
-        theta = random.uniform(0, 2 * math.pi)
-        x = round(x1 + r * math.cos(theta), 2)
-        y = round(y1 + r * math.sin(theta), 2)
+    dx = x1 - map_x_cent
+    dy = y1 - map_y_cent
 
-        if x > x_min and x < x_max and y > y_min and y < y_max and get_dist(((x, y), (x1, y1))) < 10 and get_dist(((x, y), (x1, y1))) > 5:
-            cords.append((x,y))
+    if dx < 0:
+        x_min = x1 + 2
+        x_max -= 3
 
-    cent_x = round((x + x1)/2, 2)
-    cent_y = round((y + y1)/2, 2)
+    else:
+        x_max = x1 - 2
+        x_min += 3
+
+    if dy > 0:
+        y_max = y1 - 2
+        y_min += 3
+
+    else:
+        y_min = y1 + 2
+        y_max -= 3
+
+
+    #while len(cords) < 2:
+    x2 = round(random.uniform(x_min, x_max), 2)
+    y2 = round(random.uniform(y_min, y_max), 2)
+
+    cords.append((x2, y2))
+
+
+    if dx < 0:
+        x_min = x1 + 4
+        x_max = 8
+    else:
+        x_max = x1 - 4
+        x_min = 0
+
+    if dy > 0:
+        y_max = y1 - 4
+        y_min = 1
+    else:
+        y_min = y1 + 4
+        y_max = 8
+
 
     while len(cords) < 3:
-        r = random.randint(1, 4)
-        theta = random.uniform(0, 2 * math.pi)
-        x = round(cent_x + r * math.cos(theta), 2)
-        y = round(cent_y + r * math.sin(theta), 2)
+        x3 = round(random.uniform(x_min, x_max), 2)
+        y3 = round(random.uniform(y_min, y_max), 2)
 
-        if x > x_min and x < x_max and y > y_min and y < y_max and get_dist(((x, y), (cords[0][0], cords[0][1]))) > 1 and get_dist(((x, y), (cords[1][0], cords[1][1]))) > 1:
-            cords.append((x, y))
+        d_1_3 = get_dist(((x3, y3), (x1, y1)))
+
+        if d_1_3 > 5 and d_1_3 < 10 and get_dist(((x2, y2), (x3, y3))) > 1:
+            cords.append((x3, y3))
+
+
 
     return cords
+
+
+
+def gen_rots(cords: list) -> list:
+    x1, y1 = cords[0]
+    x2, y2 = cords[1]
+    x3, y3 = cords[2]
+    
+    dx = x1-x2
+    dy = y1-y2
+    ang1 = math.atan((abs(dx)/abs(dy))) + math.pi/2
+
+
+    if dx > 0:
+        if dy < 0:
+            ang1 = math.pi/2 + ang1
+        else:
+            ang1 = 3*math.pi/2 - ang1
+
+    else:
+        if dy > 0:
+            ang1 = 3*math.pi/2 + ang1
+        else:
+            ang1 = math.pi/2 - ang1
+
+    dx = x3 - x2
+    dy = y3 - y2
+
+    ang3 = math.atan((abs(dx)/abs(dy))) + math.pi/2
+
+    if dx > 0:
+        if dy < 0:
+            ang3 = math.pi/2 + ang3
+        else:
+            ang3 = 3*math.pi/2 - ang3
+
+    else:
+        if dy > 0:
+            ang3 = 3*math.pi/2 + ang3
+        else:
+            ang3 = math.pi/2 - ang3
+
+    ang1 = random.choice([ang1, ang1 + math.pi])
+    ang2 = random.choice([ang1, ang1 + math.pi])
+    ang3 = random.choice([ang3, ang3 + math.pi])
+
+    return [ang1, ang2, ang3]
+
+
 
 
 
@@ -77,39 +159,45 @@ def main():
     rclpy.init()
     node = rclpy.create_node('simple_spawner')
 
-    if len(sys.argv) < 2:
-        print('No args ???')
-        return        
 
-    elif sys.argv[1] == 'gen':
-
-        bridge = subprocess.Popen(
-            [
-                "ros2", "run", "ros_gz_bridge", "parameter_bridge",
-                "/world/clover2_aruco/create@ros_gz_interfaces/srv/SpawnEntity"
-            ],
-            start_new_session=True
-        )
-
-
+    if sys.argv[1] == 'gen':
         client = node.create_client(SpawnEntity, '/world/clover2_aruco/create')
+
+        bridge = None
+
+        if not client.wait_for_service(timeout_sec=1.0):
+            bridge = subprocess.Popen(
+                [
+                    "ros2", "run", "ros_gz_bridge", "parameter_bridge",
+                    "/world/clover2_aruco/create@ros_gz_interfaces/srv/SpawnEntity"
+                ],
+                start_new_session=True
+            )
+
         client.wait_for_service()
 
 
         cords = gen_lep_cords()
+        rots = gen_rots(cords)
+
+        data = []
+
+        for i in range(3):
+            data.append((cords[i][0], cords[i][1], rots[i]))
 
 
-        for i, cord in enumerate(cords, 1):
+        for i, dat in enumerate(data, 1):
             req = SpawnEntity.Request()
             req.entity_factory.name = f'lep_{i}'
             req.entity_factory.sdf_filename = '/home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/lep_model/model.sdf'
-            req.entity_factory.pose.position.x = cord[0]
-            req.entity_factory.pose.position.y = cord[1]
+            req.entity_factory.pose.position.x = dat[0]
+            req.entity_factory.pose.position.y = dat[1]
             req.entity_factory.pose.position.z = 0.0
 
-            req.entity_factory.pose.orientation.z = 0.0
-            req.entity_factory.pose.orientation.y = math.pi/2
-            req.entity_factory.pose.orientation.w = 0.0
+            req.entity_factory.pose.orientation.x = 0.0
+            req.entity_factory.pose.orientation.y = 0.0
+            req.entity_factory.pose.orientation.z = math.sin(dat[2] / 2.0)
+            req.entity_factory.pose.orientation.w = math.cos(dat[2] / 2.0)
 
                     # 3. Отправляем запрос и ждём результат
             future = client.call_async(req)
@@ -119,17 +207,19 @@ def main():
 
 
     elif sys.argv[1] == 'clear':
-
-        bridge = subprocess.Popen(
-            [
-                'ros2', 'run', 'ros_gz_bridge', 'parameter_bridge',
-                '/world/clover2_aruco/remove@ros_gz_interfaces/srv/DeleteEntity'
-            ],
-            start_new_session=True
-        )
-
-
         client = node.create_client(DeleteEntity, '/world/clover2_aruco/remove')
+
+        bridge = None
+
+        if not client.wait_for_service(timeout_sec=1.0):
+            bridge = subprocess.Popen(
+                [
+                    'ros2', 'run', 'ros_gz_bridge', 'parameter_bridge',
+                    '/world/clover2_aruco/remove@ros_gz_interfaces/srv/DeleteEntity'
+                ],
+                start_new_session=True
+            )
+
         client.wait_for_service()
 
 
@@ -143,8 +233,8 @@ def main():
             print(f'Результат удаления ЛЭП {i}:', future.result().success)
 
 
-
-    os.killpg(os.getpgid(bridge.pid), signal.SIGTERM)
+    if bridge is not None:
+        os.killpg(os.getpgid(bridge.pid), signal.SIGTERM)
 
 
     node.destroy_node()

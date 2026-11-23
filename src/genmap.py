@@ -85,7 +85,7 @@ def gen_lep_cords() -> list:
 
         d_1_3 = get_dist(((x3, y3), (x1, y1)))
 
-        if d_1_3 > 5 and d_1_3 < 10 and get_dist(((x2, y2), (x3, y3))) > 1:
+        if d_1_3 > 5 and d_1_3 < 10 and get_dist(((x2, y2), (x3, y3))) > 2.5:
             cords.append((x3, y3))
 
 

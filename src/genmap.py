@@ -154,7 +154,7 @@ def is_ros_node_running(node_name: str) -> bool:
 
 
 
-def gen_leps(client, node) -> None:
+def gen_leps(client, node) -> list:
     cords = gen_lep_cords()
     rots = gen_rots(cords)
     data = []
@@ -181,9 +181,45 @@ def gen_leps(client, node) -> None:
         rclpy.spin_until_future_complete(node, future)
         print(f'Результат спавна ЛЭП {i}:', future.result().success)
 
+    return data
 
 
-def remove_leps(client, node):
+def gen_isolators(data:list, client, node) -> None:
+    cords = []
+    for lep in data:
+        x = lep[0]
+        y = lep[1]
+        ang = lep[2]
+
+        x1 = x + math.cos(ang)*0.6
+        y1 = y + math.sin(ang)*0.6
+
+        x2 = x - math.cos(ang)*0.6
+        y2 = y - math.sin(ang)*0.6
+
+        cords.append([x1, y1, 1.18])
+        cords.append([x1, y1, 0.88])
+
+        cords.append([x2, y2, 1.18])
+        cords.append([x2, y2, 0.88])
+
+
+    for i, cord in enumerate(cords, 1):
+        req = SpawnEntity.Request()
+        req.entity_factory.name = f'isol_{i}'
+        color = random.choice(['red', 'black', 'brown'])
+        req.entity_factory.sdf_filename = f'/home/pi/clover2-dev/src/clover2-sim/clover2_gz_sim/models/isol_{color}/model.sdf'
+        req.entity_factory.pose.position.x = cord[0]
+        req.entity_factory.pose.position.y = cord[1]
+        req.entity_factory.pose.position.z = cord[2]
+
+        future = client.call_async(req)
+        rclpy.spin_until_future_complete(node, future)
+        print(f'Результат спавна изолятора {i}:', future.result().success)
+
+
+
+def remove(client, node):
     for i in range(1, 4):
         req = DeleteEntity.Request()
         req.entity.name = f'lep_{i}'
@@ -192,6 +228,15 @@ def remove_leps(client, node):
         future = client.call_async(req)
         rclpy.spin_until_future_complete(node, future)
         print(f'Результат удаления ЛЭП {i}:', future.result().success)
+
+    for i in range(1, 13):
+        req = DeleteEntity.Request()
+        req.entity.name = f'isol_{i}'
+        req.entity.type = 2  # 2 = MODEL (тип сущности в Gazebo)
+
+        future = client.call_async(req)
+        rclpy.spin_until_future_complete(node, future)
+        print(f'Результат удаления изолятора {i}:', future.result().success)
 
 
 
@@ -215,7 +260,8 @@ def main():
             )
 
         client.wait_for_service()
-        gen_leps(client, node)
+        data = gen_leps(client, node)
+        gen_isolators(data, client, node)
 
 
 
@@ -234,7 +280,7 @@ def main():
             )
 
         client.wait_for_service()
-        remove_leps(client, node)
+        remove(client, node)
 
 
 
